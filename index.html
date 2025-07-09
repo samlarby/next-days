@@ -4,13 +4,22 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="assets/css/style.css">
-    <title>Next Days App</title>
+    <link rel="icon" type="image/x-icon" href="assets/images/truck-fast-solid.svg">
+    <title>Next Days & Priority</title>
 </head>
 <body>
-    <h1>Paste Text Below</h1>
-    <textarea id="inputText" placeholder="Paste your text here..."></textarea>
-    <br>
-    <button onclick="handleText()">Process Text</button>
+  <header>
+    <img src="assets/images/S_S_Logos-01_320x.avif" alt="Italian Trulli">
+    <h1>Next Days</h1>
+  </header>
+  <textarea id="errorLog" placeholder="Paste next days in here...." rows="10"></textarea>
+  <div class="button-container">
+    <label>Upload Replenishment CSV:</label>
+    <input type="file" id="csvFile" accept=".csv">
+    <button onclick="processData()">Check Replenishment</button>
+  </div>
+  <div id="results"></div>
+
 </body>
 <script src="assets/js/index.js"></script>
 </html>
