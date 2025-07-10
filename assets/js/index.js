@@ -36,6 +36,44 @@ function parseCSV(content) {
   return data;
 }
 
+function parseLocation(loc) {
+  const match = loc.match(/^([A-Z]+\d+)\.C(\d+)\.S(\d+)$/);
+  if (!match) return { parsed: false, aisle: '', col: 0, shelf: 0 };
+  return {
+    parsed: true,
+    aisle: match[1],
+    col: parseInt(match[2], 10),
+    shelf: parseInt(match[3], 10)
+  };
+}
+
+function pickLocationSorter([locA], [locB]) {
+  const parsedA = parseLocation(locA);
+  const parsedB = parseLocation(locB);
+
+  const isAParsed = parsedA.parsed;
+  const isBParsed = parsedB.parsed;
+
+  if (isAParsed && isBParsed) {
+    // Both are bin-style, compare aisle/col/shelf
+    if (parsedA.aisle !== parsedB.aisle) return parsedA.aisle.localeCompare(parsedB.aisle);
+    if (parsedA.col !== parsedB.col) return parsedA.col - parsedB.col;
+    return parsedA.shelf - parsedB.shelf;
+  }
+
+  if (isAParsed && !isBParsed) {
+    // Parsed bin locations always come first
+    return -1;
+  }
+
+  if (!isAParsed && isBParsed) {
+    return 1;
+  }
+
+  // Neither parsed: compare alphabetically
+  return locA.localeCompare(locB);
+}
+
 document.getElementById("csvFile").addEventListener("change", function(event) {
   const file = event.target.files[0];
   if (!file) return;
@@ -65,57 +103,88 @@ document.getElementById("csvFile").addEventListener("change", function(event) {
   }
 
   function processData() {
-    const logText = document.getElementById("errorLog").value;
-    const demandData = extractErrorLogSKUs(logText);
+  const logText = document.getElementById("errorLog").value;
+  const demandData = extractErrorLogSKUs(logText);
 
-    const rows = Object.keys(demandData).map(sku => {
-      const required = demandData[sku];
-      const availableData = replenData[sku] || { total: 0, locations: {} };
-      const available = availableData.total;
-      const diff = available - required;
-      const enough = available >= required;
+  // Step 1: Create all pick tasks with quantities
+  const pickTasks = [];
 
-      let pickPlan = "";
-
-  if (available > 0) {
-    const sortedLocations = Object.entries(availableData.locations)
-      .sort((a, b) => b[1] - a[1]); // Descending by quantity
-
+  for (const sku of Object.keys(demandData)) {
+    const required = demandData[sku];
+    const availableData = replenData[sku] || { total: 0, locations: {} };
     let toPick = required;
-    const picks = [];
 
-    for (const [location, qty] of sortedLocations) {
-      if (toPick <= 0) break;
-      const pickQty = Math.min(qty, toPick);
-      picks.push(`${location}`);
-      toPick -= pickQty;
+    if (availableData.total > 0) {
+      const sortedLocations = Object.entries(availableData.locations).sort(pickLocationSorter);
+
+      const picks = [];
+      for (const [location, qty] of sortedLocations) {
+        if (toPick <= 0) break;
+        const pickQty = Math.min(qty, toPick);
+        picks.push({ location, qty: pickQty });
+        toPick -= pickQty;
+      }
+
+      if (toPick > 0) {
+        picks.push({ location: `❌ Shortfall: ${toPick}`, qty: 0 });
+      }
+
+      // Add all of these individual tasks to the big list (so we can sort globally)
+      for (const p of picks) {
+        pickTasks.push({
+          sku,
+          required,
+          location: p.location,
+          qty: p.qty,
+          multi: picks.length > 1
+        });
+      }
+    } else {
+      // No stock at all
+      pickTasks.push({
+        sku,
+        required,
+        location: '—',
+        qty: 0,
+        multi: false
+      });
     }
-
-    if (toPick > 0) {
-      picks.push(`❌ Shortfall: ${toPick}`);
-    }
-
-    pickPlan = picks.join("<br>");
-  } else {
-    pickPlan = "—";
   }
 
-  return { sku, required, available, diff, enough, pickPlan };
-});
+  // Step 2: Globally sort the pick tasks by location
+  pickTasks.sort((a, b) => pickLocationSorter([a.location], [b.location]));
 
-// Display table
-let html = "<h3>Next Days</h3><table><tr><th>SKU</th><th>Quantity</th><th>From Location</th></tr>";
+  // Step 3: Group back into rows for your table
+  const rows = {};
+  for (const task of pickTasks) {
+    if (!rows[task.sku]) {
+      rows[task.sku] = {
+        sku: task.sku,
+        required: task.required,
+        picks: []
+      };
+    }
 
-for (const row of rows) {
-  html += `<tr class="${row.enough ? 'enough' : 'notenough'}">
-    <td>${row.sku}</td>
-    <td>${row.required}</td>
-    <td>${row.pickPlan}</td>
-  </tr>`;
+    // Display with qty only if multi-location is needed
+    if (task.multi && task.qty > 0) {
+      rows[task.sku].picks.push(`${task.location} (${task.qty})`);
+    } else {
+      rows[task.sku].picks.push(`${task.location}`);
+    }
+  }
+
+  // Step 4: Render your table
+  let html = "<h3>Next Days</h3><table><tr><th>SKU</th><th>Quantity</th><th>From Location</th></tr>";
+  for (const row of Object.values(rows)) {
+    const availableData = replenData[row.sku] || { total: 0 };
+    const enough = availableData.total >= row.required;
+
+    html += `<tr class="${enough ? 'enough' : 'notenough'}">
+      <td>${row.sku}</td>
+      <td>${row.required}</td>
+      <td>${row.picks.join('<br>')}</td>
+    </tr>`;
+  }
+  html += "</table>";
+  document.getElementById("results").innerHTML = html;
 }
-
-html += "</table>";
-document.getElementById("results").innerHTML = html;
-}
-
-  

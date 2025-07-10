@@ -1,7 +1,7 @@
 body {
   font-family: Arial, sans-serif;
   margin: 10px;
-  background: #e1e1e1;
+  background: #d9b8b8;
 }
 
 header {
@@ -12,7 +12,6 @@ header {
 }
 
 h1 {
-  margin-right: 10px;
   margin-bottom: 0px;
   font-weight: 200;
 }
@@ -33,6 +32,10 @@ button {
   border-radius: 10px;
 }
 
+button:hover {
+  background-color: #c17979;
+}
+
 .button-container {
   display: flex;
   align-items: center;
@@ -43,7 +46,7 @@ button {
 
 #results {
   margin-top: 20px;
-  background: #e1e1e1;
+  background: #d9b8b8;
   padding: 10px;
   border-radius: 5px;
 }
