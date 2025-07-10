@@ -19,6 +19,7 @@ h1 {
 textarea {
   width: 100%;
   border-radius: 10px;
+  padding-top: 10px ;
 }
 
 input[type="file"] {
@@ -34,6 +35,7 @@ button {
 
 button:hover {
   background-color: #c17979;
+  cursor: pointer;
 }
 
 .button-container {
@@ -43,6 +45,19 @@ button:hover {
   flex-direction: column;
   margin: 10px;
 }
+
+.fa-solid {
+  font-size: 40px;
+  color: azure;
+  margin-bottom: 10px;
+}
+
+.fa-solid:hover {
+  color: #c17979;
+  cursor: pointer;
+}
+
+
 
 #results {
   margin-top: 20px;

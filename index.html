@@ -12,14 +12,19 @@
     <img src="assets/images/S_S_Logos-01_320x.avif" alt="Italian Trulli">
     <h1>Next Days</h1>
   </header>
-  <textarea id="errorLog" placeholder="Paste next days in here...." rows="10"></textarea>
+  <textarea id="errorLog" placeholder="   Paste next days in here...." rows="10"></textarea>
   <div class="button-container">
-    <label>Upload Replenishment CSV:</label>
-    <input type="file" id="csvFile" accept=".csv">
+    <p>Drag and drop or click to select replenishment CSV file:</p>
+    <label for="csvFile" id="drop-area" class="file-drop-area">
+      <i class="fa-solid fa-file-import"></i>
+    </label>
+    <input type="file" id="csvFile" accept=".csv" style="display: none;">
+    <div id="file-name"></div>
     <button onclick="processData()">Check Replenishment</button>
   </div>
   <div id="results"></div>
 
 </body>
 <script src="assets/js/index.js"></script>
+<script src="https://kit.fontawesome.com/659d1dc86e.js" crossorigin="anonymous"></script>
 </html>

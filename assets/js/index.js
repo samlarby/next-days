@@ -1,5 +1,50 @@
 let replenData = {};
 
+const dropArea = document.getElementById('drop-area');
+const fileInput = document.getElementById('csvFile');
+const fileNameDisplay = document.getElementById('file-name');
+
+fileInput.addEventListener('change', (event) => {
+  const file = event.target.files[0];
+  if (file) {
+    fileNameDisplay.textContent = `Selected file: ${file.name}`;
+    handleFile(file);
+  }
+});
+
+['dragenter', 'dragover'].forEach(eventName => {
+  dropArea.addEventListener(eventName, (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    dropArea.classList.add('dragover');
+  });
+});
+
+['dragleave', 'drop'].forEach(eventName => {
+  dropArea.addEventListener(eventName, (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    dropArea.classList.remove('dragover');
+  });
+});
+
+dropArea.addEventListener('drop', (e) => {
+  const file = e.dataTransfer.files[0];
+  if (file) {
+    fileNameDisplay.textContent = `Selected file: ${file.name}`;
+    handleFile(file);
+  }
+});
+
+function handleFile(file) {
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const content = e.target.result;
+    replenData = parseCSV(content);
+  };
+  reader.readAsText(file, 'UTF-8');
+}
+
 function parseCSV(content) {
   const delimiter = ',';  // <-- CSV is comma-separated
   const lines = content.trim().split('\n');
