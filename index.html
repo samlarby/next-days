@@ -5,14 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="assets/css/style.css">
     <link rel="icon" type="image/x-icon" href="assets/images/truck-fast-solid.svg">
+    <script src="https://kit.fontawesome.com/659d1dc86e.js" crossorigin="anonymous"></script>
     <title>Next Days & Priorities</title>
 </head>
 <body>
   <header>
     <img src="assets/images/S_S_Logos-01_320x.avif" alt="Italian Trulli">
-    <h1>Next Days</h1>
+    <h1><em>Next Days</em></h1>
   </header>
-  <textarea id="errorLog" placeholder="   Paste next days in here...." rows="10"></textarea>
+  <div class="text-area">
+    <textarea id="errorLog" placeholder="Paste next days in here...." rows="10"></textarea>
+  </div>
   <div class="button-container">
     <p>Drag and drop or click to select replenishment CSV file:</p>
     <label for="csvFile" id="drop-area" class="file-drop-area">
@@ -23,8 +26,6 @@
     <button onclick="processData()">Check Replenishment</button>
   </div>
   <div id="results"></div>
-
 </body>
 <script src="assets/js/index.js"></script>
-<script src="https://kit.fontawesome.com/659d1dc86e.js" crossorigin="anonymous"></script>
 </html>

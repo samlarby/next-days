@@ -1,5 +1,7 @@
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+
 body {
-  font-family: Arial, sans-serif;
+  font-family: "Montserrat", sans-serif;
   margin: 10px;
   background: #d9b8b8;
 }
@@ -13,13 +15,20 @@ header {
 
 h1 {
   margin-bottom: 0px;
-  font-weight: 200;
+  letter-spacing: -2px;
+}
+
+.text-area {
+  width: 100%;
+  text-align: center;
 }
 
 textarea {
-  width: 100%;
+  width: 95%;
   border-radius: 10px;
-  padding-top: 10px ;
+  padding: 10px ;
+  border: solid 2px #ffffff;
+  background-color: #f0f0f0;
 }
 
 input[type="file"] {
@@ -31,6 +40,8 @@ button {
   padding: 10px 20px;
   font-size: 16px;
   border-radius: 10px;
+  border: none;
+  background-color: #f0f0f0;
 }
 
 button:hover {
@@ -48,7 +59,7 @@ button:hover {
 
 .fa-solid {
   font-size: 40px;
-  color: azure;
+  color: #f0f0f0;
   margin-bottom: 10px;
 }
 
