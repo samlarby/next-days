@@ -171,7 +171,7 @@ document.getElementById("csvFile").addEventListener("change", function(event) {
       }
 
       if (toPick > 0) {
-        picks.push({ location: `❌ Shortfall: ${toPick}`, qty: 0 });
+        picks.push({ location: `❌ More required than on replen sheet: ${toPick}`, qty: 0 });
       }
 
       // Add all of these individual tasks to the big list (so we can sort globally)
